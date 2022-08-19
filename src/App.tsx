@@ -3,7 +3,7 @@ import '@aws-amplify/ui-react/styles.css';
 import Amplify from 'aws-amplify';
 import awsconfig from './aws-exports';
 import { Authenticator, withAuthenticator } from '@aws-amplify/ui-react';
-import styled from 'styled-components';
+import styled from 'styled-components/macro';
 Amplify.configure(awsconfig);
 function App() {
   return (
