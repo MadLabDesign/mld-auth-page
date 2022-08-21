@@ -69,3 +69,20 @@ _Below is an example of how you can instruct your audience on installing and set
 
 <!-- TODO tasks -->
 ## Tasks To be added to project
+
+
+
+
+
+
+
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
