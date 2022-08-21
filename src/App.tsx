@@ -15,6 +15,7 @@ import {
 import styled from "styled-components/macro";
 import { ProjectCard } from "./components/ui/ProjectCard";
 import { FaHeart } from 'react-icons/fa';
+
 Amplify.configure(awsconfig);
 
 function App() {
