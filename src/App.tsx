@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from "react";
 
 import { listProjects } from "./graphql/queries";
+import { updateProject } from "./graphql/mutations";
 import Amplify, { API, graphqlOperation } from "aws-amplify";
 import awsconfig from "./aws-exports";
 import {
   Authenticator,
   Button,
-  Card,
   Heading,
   withAuthenticator,
+  Image,
 } from "@aws-amplify/ui-react";
 
 import styled from "styled-components/macro";
-
+import { ProjectCard } from "./components/ui/ProjectCard";
+import { FaHeart } from 'react-icons/fa';
 Amplify.configure(awsconfig);
 
 function App() {
@@ -30,7 +32,6 @@ function App() {
         data: any;
         errors: any[];
       };
-      //const projectData = await API.graphql(graphqlOperation(listProjects));
       const projectList = projectData.data.listProjects.items;
       console.log("project list", projectList);
       setProjects(projectList);
@@ -39,35 +40,77 @@ function App() {
     }
   };
 
+  const addLike = async (idx) => {
+    try {
+      const project = projects[idx];
+      project.like = project.like + 1;
+      delete project.createdAt;
+      delete project.updatedAt;
+
+      const projectData = (await API.graphql(
+        graphqlOperation(updateProject, { input: project })
+      )) as {
+        data: any;
+        errors: any[];
+      };
+
+      const projectList = [...projects];
+      projectList[idx] = projectData.data.updateProject;
+      setProjects(projectList);
+    } catch (error) {
+      console.log("error on adding Like to project", error);
+    }
+  };
   return (
     <Authenticator>
       {({ signOut }) => (
-        <Main>
-          <header>
-            <Heading level={1} variation="primary" color={"white"}>
-              Logged In page
+        <>
+          <Header>
+            <Heading level={4} variation="primary" color={"white"}>
+              The Gallery
             </Heading>
             <Button variation="primary" onClick={signOut}>
               Sign out
             </Button>
-          </header>
-          <div className="projectList">
-            {projects.map((project, idx) => {
-              return (
-              <Card variation="elevated" key={`project${idx}`}>
-                <div>
-                  <div className="projectTitle">{project.title}</div>
-                  <div className="projectOwner">{project.owner}</div>
-                </div>
-                <div>
-                <Button name="like" aria-label="like">{project.like}</Button>
-                </div>
-                <div className="projectDescription">{project.description}</div>
-              </Card>
-              );
-            })}
-          </div>
-        </Main>
+          </Header>
+          <Main>
+            <InnerWrapper>
+              {projects.map((project, idx) => {
+                return (
+                  <ProjectCard variation="elevated" key={`project${idx}`}>
+                    <Heading level={5} variation="primary">
+                      {project.title}
+                    </Heading>
+                    <hr />
+
+                    <Image
+                      width="300px"
+                      height="100%"
+                      overflow="hidden"
+                      objectFit="cover"
+                      objectPosition="50% 50%"
+                      src={project.filePath}
+                      alt={project.title}
+                    />
+                    <i>{project.owner}</i>
+                    <p className="projectDescription">
+                      <small>{project.description}</small>
+                    </p>
+
+                    <Button
+                      variation="link"
+                      loadingText="like"
+                      ariaLabel="like"
+                      onClick={() => addLike(idx)}
+                    >
+                      <FaHeart/> <span style={{marginLeft: '10px', fontWeight: '400'}}>{project.like}</span>
+                    </Button>
+                  </ProjectCard>
+                );
+              })}
+            </InnerWrapper>
+          </Main>
+        </>
       )}
     </Authenticator>
   );
@@ -78,9 +121,25 @@ export default withAuthenticator(App);
 const Main = styled.main`
   background-color: #00404d;
   width: 100%;
-  height: 100vh;
+  min-height: calc(100vh - 70px);
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
+`;
+
+const InnerWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  flex-flow: row wrap;
+`;
+const Header = styled.header`
+  background-color: #025b62;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
 `;
