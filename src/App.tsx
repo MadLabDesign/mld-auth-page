@@ -8,10 +8,9 @@ import {
   Button,
   Card,
   Heading,
-  ThemeProvider,
   withAuthenticator,
 } from "@aws-amplify/ui-react";
-import "@aws-amplify/ui-react/styles.css";
+
 import styled from "styled-components/macro";
 
 Amplify.configure(awsconfig);
